@@ -20,11 +20,10 @@ extern "C" {
 #include <random>
 
 
-void transwarp(GLFWwindow* window, data* data) {
+void aurora_warp(GLFWwindow* window, data* data) {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
     glBlendEquation(GL_FUNC_ADD);
-    //glBlendColor(0.0f, 1.0f, 0.0f, 0.1f);
     
     Shader ourShader("shader.vs", "transwarp.fs");
 
@@ -122,13 +121,11 @@ void transwarp(GLFWwindow* window, data* data) {
                 glm::mat4 model = glm::mat4(1.0f);
                 model = glm::translate(model, p.position);
                 model = glm::scale(model, glm::vec3(500.0f));
-                ourShader.setFloat("alphaScale",std::pow(intensity,2.0f)/8.0f);
-                ourShader.setVec3("particleColor",glm::vec3(((intensity-0.4f)+(last_intensity-0.4f))/2,
-                                                            (intensity+last_intensity/2),
-                                                            ((intensity-0.2f)+(last_intensity-0.2f))/2));
+                ourShader.setVec3("particleColor",p.color);
+                ourShader.setFloat("alphaScale",intensity/5.0f);
                 ourShader.setMat4("model", model);
 
-                glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+                glDrawArrays(GL_TRIANGLES, 0, 6);
             }
             else {
                 p.position += p.velocity * 10.0f * std::pow(intensity, 2.0f) + glm::vec3(0.0f, 0.0f, 0.1f);

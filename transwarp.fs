@@ -8,7 +8,7 @@ void main()
 {
     vec2 uv = TexCoord - vec2(0.5);
     float dist = length(uv);
-    if (dist > 0.5) {
+    if (dist > 1.0) {
         discard;
     }
     float coreRadius = 0.5;

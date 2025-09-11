@@ -35,9 +35,9 @@ int main(int argc, char* argv[]) {
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
         if (arg == "--help") {
-            std::cout << "Usage: ./music_gazer --source <audio-device-id> [--animation star_pass|warp|transwarp]\n";
+            std::cout << "Usage: ./music_gazer --source <audio-device-id> [--animation star_pass|warp|transwarp|aurora_warp]\n";
             std::cout << "--source <audio_device-id>  : ID to audio capture source\n";
-            std::cout << "--animation NAME : Animation to use [default: transwarp] [possible values: star_pass, warp, transwarp]\n";
+            std::cout << "--animation NAME : Animation to use [default: transwarp] [possible values: star_pass, warp, transwarp, aurora_warp]\n";
             return 0;
         } else if (arg == "--source") {
             source = argv[i+1];
@@ -87,6 +87,8 @@ int main(int argc, char* argv[]) {
         warp(window, data);
     } else if (animation == "transwarp") {
         transwarp(window, data);
+    } else if (animation == "aurora_warp") {
+        aurora_warp(window, data);
     } else {
         std::cerr << "Unknown animation: " << animation << std::endl;
         return 1;
