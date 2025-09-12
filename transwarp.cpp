@@ -56,7 +56,7 @@ void transwarp(GLFWwindow* window, data* data) {
         bool isTunnel;
     };
 
-    int num_particles = 5000;
+    int num_particles = 10000;
     Particle particles[num_particles];
     for (int i = 0; i < num_particles; i++) {
         if (rand() % 2 == 0) {
@@ -122,10 +122,10 @@ void transwarp(GLFWwindow* window, data* data) {
                 glm::mat4 model = glm::mat4(1.0f);
                 model = glm::translate(model, p.position);
                 model = glm::scale(model, glm::vec3(500.0f));
-                ourShader.setFloat("alphaScale",std::pow(intensity,2.0f)/8.0f);
-                ourShader.setVec3("particleColor",glm::vec3(((intensity-0.4f)+(last_intensity-0.4f))/2,
-                                                            (intensity+last_intensity/2),
-                                                            ((intensity-0.2f)+(last_intensity-0.2f))/2));
+                ourShader.setFloat("alphaScale",std::pow(intensity,1.0f)/20.0f);
+                ourShader.setVec3("particleColor",glm::vec3(0.0f,
+                                                            (intensity+last_intensity)/2,
+                                                            intensity-((intensity-0.4f)+(last_intensity-0.4f))/2));
                 ourShader.setMat4("model", model);
 
                 glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -146,7 +146,7 @@ void transwarp(GLFWwindow* window, data* data) {
                 glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
             }
         }
-        last_intensity = intensity;
+        last_intensity = (intensity+last_intensity)/2;
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
