@@ -2,8 +2,8 @@
 
 #include <GLFW/glfw3.h>
 
-const unsigned int SCR_WIDTH = 1920; 
-const unsigned int SCR_HEIGHT = 1080;
+extern unsigned int SCR_WIDTH; 
+extern unsigned int SCR_HEIGHT;
 
 void star_pass(GLFWwindow* window, struct data* data);
 void warp(GLFWwindow* window, struct data* data);

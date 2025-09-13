@@ -18,7 +18,8 @@ extern "C" {
 #include "audio_capture.h"
 #include "animations.h"
 
-
+unsigned int SCR_WIDTH;
+unsigned int SCR_HEIGHT;
 
 void error_callback(int error, const char* description)
 {
@@ -35,8 +36,8 @@ int main(int argc, char* argv[]) {
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
         if (arg == "--help") {
-            std::cout << "Usage: ./music_gazer --source <audio-device-id> [--animation star_pass|warp|transwarp|aurora_warp]\n";
-            std::cout << "--source <audio_device-id>  : ID to audio capture source\n";
+            std::cout << "Usage: ./music_gazer [--source <audio-device-id> --animation star_pass|warp|transwarp|aurora_warp]\n";
+            std::cout << "--source <audio_device-id>  : ID to PipeWire Interface Node\n";
             std::cout << "--animation NAME : Animation to use [default: transwarp] [possible values: star_pass, warp, transwarp, aurora_warp]\n";
             return 0;
         } else if (arg == "--source") {
@@ -69,7 +70,13 @@ int main(int argc, char* argv[]) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "My Title", NULL, NULL);
+    
+    GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+    const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+    SCR_WIDTH = mode->width;
+    SCR_HEIGHT = mode->height;  
+
+    GLFWwindow* window = glfwCreateWindow(mode->width, mode->height, "MusicGazer", glfwGetPrimaryMonitor(), NULL);
     if (!window)
     {
         fprintf(stdout, "Error in window start\n");

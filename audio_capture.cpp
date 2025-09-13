@@ -22,14 +22,23 @@ data* init_pipewire(int argc, char* argv[], std::string source) {
 
     pw_loop_add_signal(pw_main_loop_get_loop(data->loop), SIGINT, do_quit, data);
     pw_loop_add_signal(pw_main_loop_get_loop(data->loop), SIGTERM, do_quit, data);
-
-    props = pw_properties_new(PW_KEY_MEDIA_TYPE, "Audio",
-                    PW_KEY_MEDIA_CATEGORY, "Capture",
-                    PW_KEY_MEDIA_ROLE, "Music",
-                    NULL);
-    if (argc > 1)
-            /* Set stream target if given on command line */
-            pw_properties_set(props, PW_KEY_TARGET_OBJECT, source.c_str());
+    
+    if (source == "") {
+        props = pw_properties_new(
+            PW_KEY_MEDIA_CLASS, "Stream/Input/Audio",
+            "stream.capture.sink", "true",
+            PW_KEY_MEDIA_ROLE, "Music",
+            NULL
+        );
+    } else {
+        props = pw_properties_new(PW_KEY_MEDIA_TYPE, "Audio",
+                        PW_KEY_MEDIA_CATEGORY, "Capture",
+                        PW_KEY_MEDIA_ROLE, "Music",
+                        NULL);
+        if (argc > 1) {
+                pw_properties_set(props, PW_KEY_TARGET_OBJECT, source.c_str());
+        }
+    } 
 
 
     data->stream = pw_stream_new_simple(

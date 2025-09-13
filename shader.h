@@ -25,8 +25,8 @@ public:
         try 
         {
             // open files
-            vShaderFile.open(vertexPath);
-            fShaderFile.open(fragmentPath);
+            vShaderFile.open(std::string("/usr/share/MusicGazer/shaders/") + vertexPath);
+            fShaderFile.open(std::string("/usr/share/MusicGazer/shaders/") + fragmentPath);
             std::stringstream vShaderStream, fShaderStream;
             // read file's buffer contents into streams
             vShaderStream << vShaderFile.rdbuf();
