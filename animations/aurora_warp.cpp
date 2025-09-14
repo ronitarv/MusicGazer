@@ -111,7 +111,7 @@ void aurora_warp(GLFWwindow* window, data* data) {
         glBindVertexArray(VAO);
         for (auto& p: particles) {
             if (p.isTunnel) {
-                p.position += p.velocity * 50.0f * std::pow(intensity, 2.0f) + glm::vec3(0.0f, 0.0f, 0.1f);
+                p.position += p.velocity * 100.0f * std::pow(intensity, 2.0f) + glm::vec3(0.0f, 0.0f, 0.1f);
                 if (p.position[2] > 0.0f) {
                     float angle = rand_dist(gen);
                     float x = tunnel_radius * cos(angle);

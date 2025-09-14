@@ -82,7 +82,7 @@ void warp(GLFWwindow* window, data* data) {
         ourShader.setMat4("view", view);
         glBindVertexArray(VAO);
         for (auto& p: particles) {
-            p.position += p.velocity * 3.0f * std::pow(intensity, 2.0f) + glm::vec3(0.0f, 0.0f, 0.1f);
+            p.position += p.velocity * 6.0f * std::pow(intensity, 2.0f) + glm::vec3(0.0f, 0.0f, 0.1f);
             if (p.position[0] < -1000.0f || p.position[0] > 1000.0f || p.position[1] < -1000.0f || p.position[1] > 1000.0f || p.position[2] > 0.0f) {
                 p.position = glm::vec3(rand() % 200 - 100, rand() % 200 - 100, -1000.0f);
             }
