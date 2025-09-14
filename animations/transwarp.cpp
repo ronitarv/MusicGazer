@@ -61,7 +61,7 @@ void transwarp(GLFWwindow* window, data* data) {
     int num_particles = 10000;
     Particle particles[num_particles];
     for (int i = 0; i < num_particles; i++) {
-        if (rand() % 2 == 0) {
+        if (rand() % 4 == 0) {
             particles[i].position = glm::vec3(0.0f, 0.0f, -(rand_length(gen)));
             particles[i].velocity = glm::vec3(((rand() % 100) / 5000.0f - 0.01f), ((rand() % 100) / 5000.0f - 0.01f), ((rand() % 100) / 50.0f));
             particles[i].isTunnel = false;
@@ -70,7 +70,7 @@ void transwarp(GLFWwindow* window, data* data) {
             float x = tunnel_radius * cos(angle);
             float y = tunnel_radius * sin(angle);
             particles[i].position = glm::vec3(x, y, -(rand_length(gen)));
-            particles[i].velocity = glm::vec3(0.0f, 0.0f, ((rand() % 100) / 50.0f));
+            particles[i].velocity = glm::vec3(0.0f, 0.0f, ((rand() % 100) / 50.0f + 1.0f));
             particles[i].color = glm::vec3(0.1f, (rand() & 1000)/1000.0, 0.1f);
             particles[i].isTunnel = true;
         }
@@ -112,7 +112,7 @@ void transwarp(GLFWwindow* window, data* data) {
         auto duration = std::chrono::duration_cast<std::chrono::seconds>(stop - start);
 
         if (duration.count() > 1) {
-            max_intensity += (peak_intensity-max_intensity)/10;
+            max_intensity += (peak_intensity-max_intensity)/300;
             peak_intensity = 0.1f;
             start = std::chrono::high_resolution_clock::now();
         }
@@ -134,7 +134,7 @@ void transwarp(GLFWwindow* window, data* data) {
         glBindVertexArray(VAO);
         for (auto& p: particles) {
             if (p.isTunnel) {
-                p.position += p.velocity * 100.0f * std::pow((norm_intensity+9*last_intensity)/10.0f, 2.0f) + glm::vec3(0.0f, 0.0f, 0.1f);
+                p.position += p.velocity * 100.0f * std::pow((norm_intensity+9*last_intensity)/10.0f, 5.0f) + glm::vec3(0.0f, 0.0f, 0.1f);
                 if (p.position[2] > 0.0f) {
                     float angle = rand_dist(gen);
                     float x = tunnel_radius * cos(angle);
@@ -144,10 +144,9 @@ void transwarp(GLFWwindow* window, data* data) {
                 glm::mat4 model = glm::mat4(1.0f);
                 model = glm::translate(model, p.position);
                 model = glm::scale(model, glm::vec3(500.0f));
-                ourShader.setFloat("alphaScale",
-                    std::pow((1.0f-std::abs(p.position[2])/tunnel_length),3.0f)/20.0f +
-                    std::pow((norm_intensity+9*last_intensity)/10.0f,10.0f)/60.0f);
-                ourShader.setVec3("particleColor",glm::vec3(0.0f,
+                ourShader.setFloat("alphaScale",std::max(0.01f,std::pow((1.0f-std::abs(p.position[2])/tunnel_length),1.0f) *
+                    std::pow((norm_intensity+9*last_intensity)/10.0f,10.0f)/30.0f));
+                                    ourShader.setVec3("particleColor",glm::vec3(0.0f,
                                                             (norm_intensity+9*last_intensity)/10.0f,
                                                             (norm_intensity+9*last_intensity)/10.0f-((norm_intensity-0.4f)+9*(last_intensity-0.4f))/10));
                 ourShader.setMat4("model", model);
