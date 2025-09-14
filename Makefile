@@ -1,6 +1,6 @@
 CXX := g++
 
-CXXFLAGS := -g -std=c++11 -I. -I./animations
+CXXFLAGS := -g -std=c++17 -Wall -I. -I./animations
 
 SRCS := $(wildcard *.cpp) $(wildcard animations/*.cpp)
 

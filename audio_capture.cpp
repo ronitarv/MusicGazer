@@ -91,8 +91,8 @@ static void on_process(void *userdata)
                 for (n = c; n < n_samples; n += n_channels)
                         max = fmaxf(max, fabsf(samples[n]));
 
-                peak = SPA_CLAMPF(max * 30, 0.f, 39.f);
-                intensity = peak/15.0f;
+                peak = SPA_CLAMPF(max * 30, 0.0f, 30.0f);
+                intensity = peak/30.0f;
         }
         data->move = true;
         fflush(stdout);

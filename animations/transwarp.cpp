@@ -18,7 +18,7 @@ extern "C" {
 #include "audio_capture.h"
 #include "animations.h"
 #include <random>
-
+#include <chrono>
 
 void transwarp(GLFWwindow* window, data* data) {
     glEnable(GL_BLEND);
@@ -30,7 +30,8 @@ void transwarp(GLFWwindow* window, data* data) {
 
     float last_intensity = 0.0f;
     float tunnel_radius = 1000.0f;
-    float tunnel_length = 10000.0f;
+    float tunnel_length = 100000.0f;
+    float norm_intensity = 0.0;
 
     std::random_device ran_dev;
     std::mt19937 gen(ran_dev());
@@ -95,8 +96,23 @@ void transwarp(GLFWwindow* window, data* data) {
     glEnableVertexAttribArray(1);
     glBindBuffer(GL_ARRAY_BUFFER, 0); 
 
-    glBindVertexArray(0); 
+    glBindVertexArray(0);
+    auto start = std::chrono::high_resolution_clock::now();
+    float max_intensity = 0.1f;
+    float peak_intensity = 0.1f;
     while (!glfwWindowShouldClose(window)) {
+        std::cout << max_intensity << "   -    " << peak_intensity << std::endl;
+        if (intensity > peak_intensity) {
+            peak_intensity = std::max(intensity,0.01f);
+        }
+        norm_intensity = intensity / max_intensity;
+        auto stop = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::seconds>(stop - start);
+        if (duration.count() > 1) {
+            max_intensity += (peak_intensity-max_intensity)/10;
+            peak_intensity = 0.1f;
+            start = std::chrono::high_resolution_clock::now();
+        }
         pw_loop_iterate(data->pwloop, 0);
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -112,7 +128,7 @@ void transwarp(GLFWwindow* window, data* data) {
         glBindVertexArray(VAO);
         for (auto& p: particles) {
             if (p.isTunnel) {
-                p.position += p.velocity * 50.0f * std::pow(intensity, 2.0f) + glm::vec3(0.0f, 0.0f, 0.1f);
+                p.position += p.velocity * 2000.0f * std::pow(norm_intensity, 2.0f) + glm::vec3(0.0f, 0.0f, 0.1f);
                 if (p.position[2] > 0.0f) {
                     float angle = rand_dist(gen);
                     float x = tunnel_radius * cos(angle);
@@ -121,32 +137,35 @@ void transwarp(GLFWwindow* window, data* data) {
                 }
                 glm::mat4 model = glm::mat4(1.0f);
                 model = glm::translate(model, p.position);
-                model = glm::scale(model, glm::vec3(500.0f));
-                ourShader.setFloat("alphaScale",std::pow(intensity,1.0f)/20.0f);
+                model = glm::scale(model, glm::vec3(1000.0f));
+                ourShader.setFloat("alphaScale",
+                    std::pow((1.0f-std::abs(p.position[2])/tunnel_length),10.0f)/20.0f +
+                    std::pow(norm_intensity,10.0f)/20.0f);
                 ourShader.setVec3("particleColor",glm::vec3(0.0f,
-                                                            (intensity+last_intensity)/2,
-                                                            intensity-((intensity-0.4f)+(last_intensity-0.4f))/2));
+                                                            (norm_intensity+last_intensity)/2,
+                                                            norm_intensity-((norm_intensity-0.4f)+(last_intensity-0.4f))/2));
                 ourShader.setMat4("model", model);
 
                 glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
             }
             else {
-                p.position += p.velocity * 10.0f * std::pow(intensity, 2.0f) + glm::vec3(0.0f, 0.0f, 0.1f);
+                p.position += p.velocity * 50.0f * std::pow(norm_intensity, 2.0f) + glm::vec3(0.0f, 0.0f, 0.1f);
                 if (p.position[0] < -1000.0f || p.position[0] > 1000.0f || p.position[1] < -1000.0f || p.position[1] > 1000.0f || p.position[2] > 0.0f) {
                     p.position = glm::vec3(rand() % 200 - 100, rand() % 200 - 100, -tunnel_length);
                 }
                 glm::mat4 model = glm::mat4(1.0f);
                 model = glm::translate(model, p.position);
-                ourShader.setVec3("particleColor",glm::vec3(0.2f, 0.2f, 0.2f) + particleColor * glm::vec3((intensity+last_intensity)/2,
-                                                            (intensity+last_intensity)/2,
-                                                            (intensity+last_intensity)/2));
+                ourShader.setVec3("particleColor",glm::vec3(0.2f, 0.2f, 0.2f) + particleColor * glm::vec3((norm_intensity+last_intensity)/2,
+                                                            (norm_intensity+last_intensity)/2,
+                                                            (norm_intensity+last_intensity)/2));
+                model = glm::scale(model, glm::vec3(0.6f));
                 ourShader.setFloat("alphaScale",1.0f);
                 ourShader.setMat4("model", model);
 
                 glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
             }
         }
-        last_intensity = (intensity+last_intensity)/2;
+        last_intensity = (norm_intensity+last_intensity)/2;
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
