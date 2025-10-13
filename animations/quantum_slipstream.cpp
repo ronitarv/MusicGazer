@@ -135,11 +135,11 @@ void quantum_slipstream(GLFWwindow* window, data* data) {
 
         for (auto& wi : complex_wi) {
             float angle = rand_dist(gen)/50.0f * 0.05f*norm_intensity;
-            for (auto& wj : complex_wi) {
+            /*for (auto& wj : complex_wi) {
                 if (std::abs(wi - wj) < 5.0f && &wi != &wj) {
                     angle += (wi > wj) ? 0.05f : -0.05f;
                 }
-            }
+            }*/
             wi += angle;
         }
 
