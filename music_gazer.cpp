@@ -1,5 +1,7 @@
 #define GLFW_INCLUDE_NONE
-#include <GL/glew.h>
+extern "C" {
+    #include <glad/glad.h>
+}
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <cmath>
@@ -83,8 +85,9 @@ int main(int argc, char* argv[]) {
     }
 
     glfwMakeContextCurrent(window);
-    if (glewInit() != GLEW_OK) {
-        fprintf(stderr, "Failed to initialize GLEW\n");
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+    {
+        std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
     

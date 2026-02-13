@@ -1,5 +1,7 @@
 #define GLFW_INCLUDE_NONE
-#include <GL/glew.h>
+extern "C" {
+    #include <glad/glad.h>
+}
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <cmath>
