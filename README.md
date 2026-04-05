@@ -2,7 +2,6 @@
 - opengl
 - glm
 - glfw
-- glew
 - pipewire
 
 ## Installation
